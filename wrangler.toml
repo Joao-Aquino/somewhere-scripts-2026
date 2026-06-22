@@ -1,0 +1,35 @@
+# wrangler.toml — Cloudflare Workers deployment config for somewhere.com
+#
+# Deploy:   npx wrangler deploy
+# Preview:  npx wrangler dev --local
+
+name               = "somewhere-workers"
+main               = "workers/index.js"
+compatibility_date = "2024-09-23"
+
+# ─── Routes ──────────────────────────────────────────────────────────────────
+# Attach both route patterns to the somewhere.com Cloudflare zone.
+# The Worker must be enabled on the zone (Cloudflare dashboard → Workers Routes).
+[[routes]]
+pattern   = "somewhere.com/js/*"
+zone_name = "somewhere.com"
+
+[[routes]]
+pattern   = "somewhere.com/cf/*"
+zone_name = "somewhere.com"
+
+# ─── Environment variables ────────────────────────────────────────────────────
+[vars]
+# Cloudflare Pages production URL that serves dist/bundle.js.
+# Update if the Pages project is renamed.
+BUNDLE_ORIGIN = "https://somewhere-redesign.pages.dev"
+
+# Microsoft Clarity project ID (Clarity dashboard → Settings → Overview).
+# Example: "abc123xyz"
+# Leave empty to disable the /cf/clarity.js route until the ID is known.
+CLARITY_ID = ""
+
+# ─── Secrets ─────────────────────────────────────────────────────────────────
+# For sensitive values (e.g. CAPI tokens if forwarding events from this Worker),
+# use: npx wrangler secret put SECRET_NAME
+# They are injected at runtime as env.<SECRET_NAME> and are never stored in git.
